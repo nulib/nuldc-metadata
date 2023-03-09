@@ -26,10 +26,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      
-      # install git restore mtime because git clone messes with mtime
-      - name: install-restore
-        run: sudo apt install git-restore-mtime
         
       # Runs a single command using the runners shell
       - name: install-nuldc
@@ -37,7 +33,7 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: run-nuldc
-        run: cd data && git restore-mtime && nuldump
+        run: cd data && nuldump
       
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
