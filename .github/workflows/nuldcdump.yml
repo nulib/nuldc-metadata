@@ -34,6 +34,10 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: run-nuldc
         run: cd data && nuldump
+        
+      # zip the files to keep them smallish
+      - name: gzip-up
+        run: for format in csv json xml; do gzip -v data/$format/*.$format; done
       
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
