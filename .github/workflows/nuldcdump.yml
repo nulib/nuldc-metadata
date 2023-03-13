@@ -35,9 +35,9 @@ jobs:
       - name: run-nuldc
         run: cd data && nuldump
         
-      # zip the files to keep them smallish
+      # zip the files to keep them smallish force update of existing
       - name: gzip-up
-        run: for format in csv json xml; do gzip -v data/$format/*.$format; done
+        run: for format in csv json xml; do gzip -fv data/$format/*.$format; done
       
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
