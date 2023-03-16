@@ -38,8 +38,13 @@ jobs:
       # zip the files to keep them smallish force update of existing
       - name: gzip-up
         run: for format in csv json xml; do gzip -fv data/$format/*.$format; done
-      
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: update metadata
         
+      # commit upstream 
+      - name: push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Update metadata as of $(date +%Y-%m-%d)"
+          git push origin main
+      
