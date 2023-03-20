@@ -9,7 +9,7 @@ This repository is a static metadata export of works from [Northwestern Universi
 Data is broken out by format (serialization) and collection. Metadata is contained within directories corresponding to the format `data/[format]` Files are named by slugged-collection-name-[collectionID].[format].gz. 
 
 - `json` files are a straight export from the api
-- `cvs` files are a human readable version, favoring `labels` and using pipes to separate multi-value fields
+- `csv` files are a human readable version, favoring `labels` and using pipes to separate multi-value fields
 - `xml` files are a conversion of json using the python `dict2xml` library
 
 ### Schedule of exports
