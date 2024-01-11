@@ -37,7 +37,10 @@ jobs:
         
       # zip the files to keep them smallish force update of existing
       - name: gzip-up
-        run: for format in csv json xml; do gzip -fv data/$format/*.$format; done
+        run: |
+          for format in csv json xml; do
+            gzip -fv data/$format/*.$format || true
+          done
         
       # commit upstream 
       - name: push
