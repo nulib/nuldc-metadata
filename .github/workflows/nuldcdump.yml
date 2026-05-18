@@ -10,6 +10,16 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      updated_since:
+        description: 'Override data/_updated_at.txt before running, for example 2026-05-11'
+        required: false
+        type: string
+      full_rebuild:
+        description: 'Remove data/_updated_at.txt and rebuild every collection'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
 # Give the default GITHUB_TOKEN write permission to commit and push the changed files back to the repository.
@@ -25,11 +35,27 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         
       # Runs a single command using the runners shell
       - name: install-nuldc
-        run: pip install nuldc
+        run: pip install 'nuldc>=0.12.2'
+
+      - name: set-dump-window
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          UPDATED_SINCE: ${{ inputs.updated_since }}
+          FULL_REBUILD: ${{ inputs.full_rebuild }}
+        run: |
+          if [ "$FULL_REBUILD" = "true" ]; then
+            rm -f data/_updated_at.txt
+          elif [ -n "$UPDATED_SINCE" ]; then
+            if [[ ! "$UPDATED_SINCE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+              echo "::error::updated_since must use YYYY-MM-DD format"
+              exit 1
+            fi
+            printf '%s\n' "$UPDATED_SINCE" > data/_updated_at.txt
+          fi
 
       # Runs a set of commands using the runners shell
       - name: run-nuldc
@@ -48,6 +74,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
+          git diff --cached --quiet && echo "No metadata changes to commit" && exit 0
           git commit -m "Update metadata as of $(date +%Y-%m-%d)"
           git push origin main
       
